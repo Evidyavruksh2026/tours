@@ -37,11 +37,19 @@
         .zoom-tools { position: absolute; bottom: 120px; right: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 5; }
         .zoom-btn { width: 35px; height: 35px; background: rgba(0,123,255,0.8); border: none; color: white; border-radius: 5px; font-size: 20px; cursor: pointer; }
 
-        @media (max-width: 768px) {
-            .content-area { flex-direction: column; }
-            #sidebar { width: 100%; height: 50vh; }
-            #tour-box { height: 50vh; }
-        }
+        /* मोबाईलसाठी - स्क्रीन ७६७px पेक्षा कमी असेल तरच एकाखाली एक येईल */
+@media (max-width: 767px) {
+    .content-area { flex-direction: column; }
+    #sidebar { width: 100%; height: 50vh; border-right: none; border-bottom: 1px solid #333; }
+    #tour-box { height: 50vh; }
+}
+
+/* टॅब्लेट आणि आडवा मोड - ७६८px पेक्षा जास्त स्क्रीन असल्यास शेजारी-शेजारीच राहील */
+@media (min-width: 768px) {
+    .content-area { flex-direction: row; }
+    #sidebar { width: 350px; height: 100%; }
+    #tour-box { flex: 1; }
+}
     </style>
 </head>
 <body>

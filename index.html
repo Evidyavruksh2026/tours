@@ -9,7 +9,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
 
-        /* लॉगिन स्क्रीन */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 999999; }
         .login-box { background: #222; padding: 30px; border-radius: 12px; border: 1px solid #007bff; text-align: center; width: 90%; max-width: 350px; }
         .login-box input { width: 100%; padding: 15px; border-radius: 8px; border: none; margin: 15px 0; font-size: 16px; background: #333; color: white; }
@@ -22,15 +21,13 @@
 
         .content-area { display: flex; flex: 1; margin-top: 55px; position: relative; overflow: hidden; }
 
-        /* साईडबार */
         #sidebar { width: 300px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
 
-        /* नकाशा विभाग - Panzoom साठी सेटिंग */
+        /* नकाशा विभाग - मोबाईल फिक्स */
         .map-box { height: 45%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
-        #panzoom-parent { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: move; }
-        #map-img { max-width: 95%; height: auto; user-select: none; -webkit-user-drag: none; }
+        #panzoom-parent { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #map-img { max-width: 95%; max-height: 95%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
 
-        /* झूम बटणे */
         .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
         .z-btn { width: 45px; height: 45px; background: #007bff; border: 2px solid #fff; color: white; border-radius: 8px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
@@ -69,7 +66,7 @@
     
     <div class="content-area">
         <div id="sidebar">
-            <div class="map-box">
+            <div class="map-box" id="map-area">
                 <div id="panzoom-parent">
                     <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp" id="map-img">
                 </div>
@@ -100,8 +97,6 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('tour-frame').src = "https://tour.panoee.net/69e7792d99ac95c94abe783f";
-            
-            // नकाशा तयार होण्यासाठी थोडा वेळ द्या
             setTimeout(initMapZoom, 500);
         } else {
             document.getElementById('msg').style.display = 'block';
@@ -111,22 +106,28 @@
     function initMapZoom() {
         const imgElement = document.getElementById('map-img');
         
-        // Panzoom लायब्ररी सुरू करणे
         panzoomInstance = Panzoom(imgElement, {
             maxScale: 6,
             minScale: 1,
-            contain: 'outside', // इमेज हलवता यावी म्हणून 'outside' ठेवले आहे
-            cursor: 'move'
+            contain: 'inside', // यामुळे इमेज चौकटीच्या बाहेर लटकणार नाही
+            cursor: 'move',
+            step: 0.3
         });
 
-        // माऊस व्हील (Wheel) ने झूम करणे
         const parent = imgElement.parentElement;
         parent.addEventListener('wheel', panzoomInstance.zoomWithWheel);
 
-        // बटणांना इव्हेंट्स जोडणे
-        document.getElementById('zoom-in').addEventListener('click', panzoomInstance.zoomIn);
-        document.getElementById('zoom-out').addEventListener('click', panzoomInstance.zoomOut);
-        document.getElementById('zoom-reset').addEventListener('click', panzoomInstance.reset);
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            panzoomInstance.zoomIn();
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            panzoomInstance.zoomOut();
+        });
+
+        document.getElementById('zoom-reset').addEventListener('click', () => {
+            panzoomInstance.reset({ animate: true });
+        });
     }
 
     function toggleM() {

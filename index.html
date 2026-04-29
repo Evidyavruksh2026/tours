@@ -7,32 +7,37 @@
     <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
 
         /* लॉगिन स्क्रीन */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 999999; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 200000; }
         .login-box { background: #222; padding: 30px; border-radius: 12px; border: 1px solid #007bff; text-align: center; width: 90%; max-width: 350px; }
         .login-box input { width: 100%; padding: 15px; border-radius: 8px; border: none; margin: 15px 0; font-size: 16px; background: #333; color: white; }
-        .login-box button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        .login-box button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         #main-content { display: none; height: 100vh; flex-direction: column; }
         
-        .brand-bar { height: 55px; background: #111; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #333; justify-content: space-between; position: fixed; top: 0; left: 0; width: 100%; z-index: 100000; }
+        .brand-bar { height: 55px; background: #111; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #333; justify-content: space-between; position: fixed; top: 0; left: 0; width: 100%; z-index: 150000; }
         #menu-btn { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
         .content-area { display: flex; flex: 1; margin-top: 55px; position: relative; overflow: hidden; height: calc(100vh - 55px); }
 
         /* साईडबार */
-        #sidebar { width: 320px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 99999; }
+        #sidebar { width: 320px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
 
-        /* नकाशा विभाग - Touch Action सुधारली */
+        /* नकाशा विभाग - अत्यंत महत्त्वाचा बदल */
         .map-box { height: 45%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
-        #panzoom-element { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: grab; touch-action: none; }
-        #panzoom-element img { max-width: 90%; max-height: 90%; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+        #panzoom-element { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #panzoom-element img { max-width: 90%; max-height: 90%; pointer-events: none; user-select: none; }
 
-        /* झूम बटणे - हाय प्रायोरिटी */
-        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
-        .z-btn { width: 42px; height: 42px; background: #007bff; border: 2px solid white; color: white; border-radius: 8px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        /* झूम बटणे - ही नकाशाच्या बाहेर पण साईडबारच्या आत आहेत */
+        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+        .z-btn { 
+            width: 42px; height: 42px; background: #007bff; border: 2px solid #fff; 
+            color: white; border-radius: 8px; font-size: 24px; font-weight: bold; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
 
         .btn-list { flex: 1; overflow-y: auto; padding: 15px; background: #1a1a1a; }
         .nav-link { width: 100%; padding: 12px; margin-bottom: 10px; background: #333; color: white; border: 1px solid #444; border-radius: 6px; text-align: left; font-size: 14px; cursor: pointer; }
@@ -40,11 +45,10 @@
         #tour-container { flex: 1; background: #000; position: relative; z-index: 1; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* मोबाईल सेटिंग */
         @media (max-width: 768px) {
             #sidebar { position: absolute; left: 0; transform: translateX(-100%); width: 280px; height: 100%; }
             #sidebar.active { transform: translateX(0); }
-            #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99998; }
+            #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 130000; }
             #overlay.active { display: block; }
         }
     </style>
@@ -55,7 +59,7 @@
     <div class="login-box">
         <h2 style="margin:0 0 10px 0; color:#007bff;">evidyavruksh</h2>
         <input type="password" id="pw" placeholder="पासवर्ड टाका">
-        <button onclick="check()">Unlock Tour</button>
+        <button onclick="checkPass()">Unlock Tour</button>
         <p id="msg" style="color:red; display:none; font-size:13px; margin-top:10px;">पासवर्ड चुकीचा आहे!</p>
     </div>
 </div>
@@ -64,20 +68,20 @@
 
 <div id="main-content">
     <div class="brand-bar">
-        <span>evidyavruksh | Master Plan</span>
+        <span>evidyavruksh | 360° Tour</span>
         <button id="menu-btn" onclick="toggleM()">Menu ☰</button>
     </div>
     
     <div class="content-area">
         <div id="sidebar">
-            <div class="map-box">
+            <div class="map-box" id="map-parent">
                 <div id="panzoom-element">
-                    <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp">
+                    <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp" id="master-plan-img">
                 </div>
                 <div class="zoom-ctrls">
-                    <button class="z-btn" id="zin">+</button>
-                    <button class="z-btn" id="zout">-</button>
-                    <button class="z-btn" id="zres">↺</button>
+                    <button class="z-btn" onclick="zoomIn()">+</button>
+                    <button class="z-btn" onclick="zoomOut()">-</button>
+                    <button class="z-btn" onclick="zoomReset()">↺</button>
                 </div>
             </div>
             <div class="btn-list">
@@ -94,51 +98,46 @@
 
 <script>
     const KEY = "Andmaster@2029";
-    let pz;
+    let pzInstance; // ग्लोबल व्हेरिएबल
 
-    function check() {
+    function checkPass() {
         const val = document.getElementById('pw').value.trim();
         if (val === KEY) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('tour-frame').src = "https://tour.panoee.net/69e7792d99ac95c94abe783f";
             
-            // Panzoom ला थोडा जास्त वेळ देऊन सुरू करा जेणेकरून लायब्ररी लोड झालेली असेल
-            setTimeout(startP, 1000);
+            // Panzoom साठी थोडा वेळ देणे आवश्यक आहे
+            setTimeout(initMasterPlan, 500);
         } else {
             document.getElementById('msg').style.display = 'block';
             document.getElementById('pw').value = "";
         }
     }
 
-    function startP() {
-        const el = document.getElementById('panzoom-element');
+    function initMasterPlan() {
+        const elem = document.getElementById('panzoom-element');
         
-        // Panzoom लायब्ररी लोड झाली आहे की नाही हे तपासणे
-        if (typeof Panzoom !== 'undefined') {
-            pz = Panzoom(el, {
-                maxScale: 6,
+        // Panzoom लायब्ररी लोड झाल्याची खात्री
+        if (window.Panzoom) {
+            pzInstance = Panzoom(elem, {
+                maxScale: 5,
                 minScale: 1,
                 contain: 'inside',
-                canvas: true // स्मूथ हालचालीसाठी
+                cursor: 'grab'
             });
 
-            // बटणांना इव्हेंट लिस्टनर्स जोडणे (हे अधिक प्रभावी आहे)
-            document.getElementById('zin').addEventListener('click', () => pz.zoomIn());
-            document.getElementById('zout').addEventListener('click', () => pz.zoomOut());
-            document.getElementById('zres').addEventListener('click', () => pz.reset());
-
-            // माऊस व्हील झूम
-            el.parentElement.addEventListener('wheel', pz.zoomWithWheel);
+            // माऊस व्हील झूम सक्रिय करणे
+            elem.parentElement.addEventListener('wheel', pzInstance.zoomWithWheel);
         } else {
-            console.error("Panzoom library not found!");
-            // जर लायब्ररी सापडली नाही तर पुन्हा लोड करण्याचा प्रयत्न
-            const script = document.createElement('script');
-            script.src = "https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js";
-            script.onload = startP;
-            document.head.appendChild(script);
+            console.error("Panzoom library not loaded!");
         }
     }
+
+    // झूम फंक्शन्स - बटणांसाठी
+    function zoomIn() { if(pzInstance) pzInstance.zoomIn(); }
+    function zoomOut() { if(pzInstance) pzInstance.zoomOut(); }
+    function zoomReset() { if(pzInstance) pzInstance.reset(); }
 
     function toggleM() {
         document.getElementById('sidebar').classList.toggle('active');
@@ -152,7 +151,7 @@
 
     // Enter Key Support
     document.getElementById('pw').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') check();
+        if (e.key === 'Enter') checkPass();
     });
 </script>
 

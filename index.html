@@ -12,7 +12,7 @@
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 999999; }
         .login-box { background: #222; padding: 30px; border-radius: 12px; border: 1px solid #007bff; text-align: center; width: 90%; max-width: 350px; }
         .login-box input { width: 100%; padding: 15px; border-radius: 8px; border: none; margin: 15px 0; font-size: 16px; background: #333; color: white; }
-        .login-box button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .login-box button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
 
         #main-content { display: none; height: 100vh; flex-direction: column; }
         
@@ -22,20 +22,20 @@
         .content-area { display: flex; flex: 1; margin-top: 55px; position: relative; overflow: hidden; }
 
         /* साईडबार */
-        #sidebar { width: 320px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
+        #sidebar { width: 300px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
 
-        /* नकाशा विभाग - CSS झूमचा वापर */
-        .map-box { height: 45%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
-        #map-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: grab; }
-        #map-img { max-width: 90%; transform-origin: center; transition: transform 0.1s ease; pointer-events: none; }
+        /* नकाशा विभाग */
+        .map-box { height: 40%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
+        #map-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #map-img { max-width: 90%; transform: scale(1); transform-origin: center; transition: transform 0.2s ease-out; pointer-events: none; }
 
-        /* झूम बटणे - ही नकाशाच्या वर 'पिन' केली आहेत */
-        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 1000; }
+        /* झूम बटणे - हाय प्रायोरिटी */
+        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 160000; }
         .z-btn { 
             width: 45px; height: 45px; background: #007bff; border: 2px solid #fff; 
             color: white; border-radius: 8px; font-size: 24px; font-weight: bold; 
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: auto;
         }
 
         .btn-list { flex: 1; overflow-y: auto; padding: 15px; background: #1a1a1a; }
@@ -58,7 +58,7 @@
     <div class="login-box">
         <h2 style="color:#007bff; margin:0 0 10px 0;">evidyavruksh</h2>
         <input type="password" id="pw" placeholder="पासवर्ड टाका">
-        <button onclick="checkPass()">Unlock Tour</button>
+        <button id="login-submit">Unlock Tour</button>
         <p id="msg" style="color:red; display:none; font-size:13px; margin-top:10px;">पासवर्ड चुकीचा आहे!</p>
     </div>
 </div>
@@ -78,9 +78,9 @@
                     <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp" id="map-img">
                 </div>
                 <div class="zoom-ctrls">
-                    <button class="z-btn" onclick="applyZoom(0.5)">+</button>
-                    <button class="z-btn" onclick="applyZoom(-0.5)">-</button>
-                    <button class="z-btn" onclick="resetZoom()">↺</button>
+                    <button class="z-btn" id="zin" type="button">+</button>
+                    <button class="z-btn" id="zout" type="button">-</button>
+                    <button class="z-btn" id="zres" type="button">↺</button>
                 </div>
             </div>
             <div class="btn-list">
@@ -96,36 +96,48 @@
 </div>
 
 <script>
-    const KEY = "Andmaster@2029";
     let currentScale = 1;
 
-    function checkPass() {
+    // लॉगिन फंक्शन
+    document.getElementById('login-submit').addEventListener('click', function() {
         const val = document.getElementById('pw').value.trim();
-        if (val === KEY) {
+        if (val === "Andmaster@2029") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('tour-frame').src = "https://tour.panoee.net/69e7792d99ac95c94abe783f";
         } else {
             document.getElementById('msg').style.display = 'block';
-            document.getElementById('pw').value = "";
         }
-    }
+    });
 
-    // स्वदेशी झूम फंक्शन - लायब्ररीवर अवलंबून नाही
-    function applyZoom(delta) {
-        const img = document.getElementById('map-img');
-        currentScale += delta;
-        
-        // मर्यादा (Scale Limits)
-        if (currentScale < 1) currentScale = 1;
-        if (currentScale > 6) currentScale = 6;
-        
-        img.style.transform = `scale(${currentScale})`;
-    }
+    // झूम फंक्शन्स - अ‍ॅड इव्हेंट लिस्टनर वापरून
+    document.getElementById('zin').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentScale < 6) {
+            currentScale += 0.5;
+            updateMapScale();
+        }
+    });
 
-    function resetZoom() {
+    document.getElementById('zout').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentScale > 1) {
+            currentScale -= 0.5;
+            updateMapScale();
+        }
+    });
+
+    document.getElementById('zres').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         currentScale = 1;
-        document.getElementById('map-img').style.transform = `scale(1)`;
+        updateMapScale();
+    });
+
+    function updateMapScale() {
+        document.getElementById('map-img').style.transform = "scale(" + currentScale + ")";
     }
 
     function toggleM() {
@@ -137,11 +149,6 @@
         document.getElementById('tour-frame').src = url;
         if(window.innerWidth < 768) toggleM();
     }
-
-    // Enter Key सपोर्ट
-    document.getElementById('pw').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') checkPass();
-    });
 </script>
 
 </body>

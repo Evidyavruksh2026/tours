@@ -2,23 +2,36 @@
 <html lang="mr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>evidyavruksh - Master Plan Pro</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; overflow: hidden; }
         
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; align-items: center; justify-content: center; z-index: 20000; }
         .login-box { background: #222; padding: 30px; border-radius: 10px; border: 1px solid #007bff; text-align: center; width: 90%; max-width: 400px; }
         .login-box input { padding: 12px; width: 100%; border-radius: 5px; border: none; margin-top: 10px; font-size: 16px; }
         .login-box button { padding: 12px 25px; margin-top: 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
 
         .main-container { display: none; height: 100vh; flex-direction: column; }
-        .brand-bar { height: 45px; background: #000; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #333; font-weight: bold; color: #007bff; justify-content: space-between; }
         
-        /* मोबाईल मेनू बटण */
-        #menu-toggle { display: none; background: #007bff; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 14px; cursor: pointer; }
+        /* Brand Bar ला टॉपला फिक्स केले जेणेकरून ते गायब होणार नाही */
+        .brand-bar { 
+            height: 50px; 
+            background: #111; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 15px; 
+            border-bottom: 1px solid #333; 
+            font-weight: bold; 
+            color: #007bff; 
+            justify-content: space-between;
+            position: relative;
+            z-index: 10001; 
+        }
+        
+        #menu-toggle { display: none; background: #007bff; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-size: 14px; cursor: pointer; }
 
         .content-area { display: flex; flex: 1; overflow: hidden; position: relative; }
         
@@ -29,42 +42,46 @@
             display: flex; 
             flex-direction: column;
             height: 100%;
-            transition: 0.3s;
-            z-index: 100;
+            transition: transform 0.3s ease;
+            z-index: 10000;
         }
 
-        .map-section { height: 40%; min-height: 200px; position: relative; overflow: hidden; background: #000; border-bottom: 2px solid #333; }
+        .map-section { height: 40%; min-height: 220px; position: relative; overflow: hidden; background: #000; border-bottom: 2px solid #333; }
         #panzoom-element { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         #panzoom-element img { max-width: 100%; height: auto; cursor: grab; }
 
-        .controls-section { flex: 1; overflow-y: auto; padding: 10px; background: #1a1a1a; }
-        .nav-btn { display: block; width: 100%; padding: 10px; margin-bottom: 8px; background: #333; color: #fff; border: 1px solid #444; border-radius: 6px; cursor: pointer; text-align: left; font-size: 13px; }
+        .controls-section { flex: 1; overflow-y: auto; padding: 15px; background: #1a1a1a; }
+        .nav-btn { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: #333; color: #fff; border: 1px solid #444; border-radius: 6px; cursor: pointer; text-align: left; font-size: 14px; }
         .nav-btn:hover { background: #007bff; }
 
-        #tour-box { flex: 1; background: #000; position: relative; }
+        #tour-box { flex: 1; background: #000; position: relative; z-index: 1; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .zoom-tools { position: absolute; bottom: 8px; right: 8px; display: flex; flex-direction: column; gap: 4px; }
-        .zoom-btn { width: 32px; height: 32px; background: rgba(0,123,255,0.9); border: none; color: white; border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .zoom-tools { position: absolute; bottom: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .zoom-btn { width: 35px; height: 35px; background: rgba(0,123,255,0.9); border: none; color: white; border-radius: 4px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* मोबाईल विशेष बदल (Portrait) */
+        /* मोबाईल सुधारणा */
         @media (max-width: 767px) {
             #menu-toggle { display: block; }
             #sidebar { 
                 position: absolute; 
-                left: -100%; /* सुरुवातीला मेनू लपलेला असेल */
-                width: 280px; 
-                height: 100%;
-                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+                left: 0;
+                top: 0;
+                transform: translateX(-100%); /* स्क्रीनच्या बाहेर लपवण्यासाठी */
+                width: 85%; 
+                max-width: 300px;
             }
-            #sidebar.open { left: 0; } /* बटन दाबल्यावर मेनू दिसेल */
-            #tour-box { width: 100%; }
-        }
-
-        /* टॅब्लेट लँडस्केपसाठी पूर्वीप्रमाणेच */
-        @media screen and (min-width: 768px) and (max-height: 600px) {
-            #sidebar { width: 280px; }
-            .map-section { height: 35%; }
+            #sidebar.open { transform: translateX(0); }
+            
+            /* मेनू उघडा असताना बॅकग्राउंडला अंधार करण्यासाठी (Optional) */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 9999;
+            }
+            .sidebar-overlay.active { display: block; }
         }
     </style>
 </head>
@@ -78,6 +95,8 @@
             <button onclick="checkPass()">Unlock Tour</button>
         </div>
     </div>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <div class="main-container" id="main-content">
         <div class="brand-bar">
@@ -99,11 +118,11 @@
                 </div>
 
                 <div class="controls-section">
-                    <p style="font-size: 11px; color: #888;">पॉइंट निवडा:</p>
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">पॉइंट निवडा:</p>
                     <button class="nav-btn" onclick="load('https://tour.panoee.net/69e7792d99ac95c94abe783f')">०१. मुख्य प्रवेश द्वार</button>
                     <button class="nav-btn" onclick="load('https://tour.panoee.net/69e76b32a06d09a45e1f2626')">०२. रेसिडेन्शिअल प्लॉट्स</button>
                     <button class="nav-btn" onclick="load('https://tour.panoee.net/69e77adb99ac9500efbe78bd')">०३. क्लब हाऊस आणि गार्डन</button>
-                    </div>
+                </div>
             </div>
 
             <div id="tour-box">
@@ -119,18 +138,29 @@
             if (document.getElementById('pass-input').value === SECRET_KEY) {
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('main-content').style.display = 'flex';
-                setTimeout(initPanzoom, 200);
+                setTimeout(initPanzoom, 300);
+            } else {
+                alert("चुकीचा पासवर्ड!");
             }
         }
 
-        // मेनू उघडणे/मिटणे
         function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            if(overlay) overlay.classList.toggle('active');
         }
 
         function initPanzoom() {
             const elem = document.getElementById('panzoom-element');
-            const panzoom = Panzoom(elem, { maxScale: 5, minScale: 0.5, contain: 'outside' });
+            // 'contain: outside' ऐवजी 'contain: inside' वापरल्याने इमेज फ्रेमच्या बाहेर जात नाही
+            const panzoom = Panzoom(elem, { 
+                maxScale: 4, 
+                minScale: 1, 
+                contain: 'inside',
+                step: 0.3
+            });
+            
             elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
             document.getElementById('zoom-in').addEventListener('click', panzoom.zoomIn);
             document.getElementById('zoom-out').addEventListener('click', panzoom.zoomOut);
@@ -139,7 +169,7 @@
 
         function load(url) {
             document.getElementById('tour-iframe').src = url;
-            // मोबाईलवर एखादे बटण दाबल्यावर मेनू आपोआप बंद व्हावा यासाठी
+            // मोबाईलवर लिंक क्लिक केल्यावर मेनू बंद करणे
             if(window.innerWidth < 768) {
                 toggleMenu();
             }

@@ -21,12 +21,12 @@
 
         .content-area { display: flex; flex: 1; margin-top: 55px; position: relative; overflow: hidden; }
 
-        #sidebar { width: 300px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
+        #sidebar { width: 320px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
 
-        /* नकाशा विभाग - मोबाईल फिक्स */
+        /* नकाशा विभाग - Responsive Fix */
         .map-box { height: 45%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
         #panzoom-parent { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-        #map-img { max-width: 95%; max-height: 95%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+        #map-img { width: 100%; height: 100%; object-fit: contain; cursor: move; }
 
         .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
         .z-btn { width: 45px; height: 45px; background: #007bff; border: 2px solid #fff; color: white; border-radius: 8px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
@@ -38,7 +38,7 @@
         iframe { width: 100%; height: 100%; border: none; }
 
         @media (max-width: 768px) {
-            #sidebar { position: absolute; left: 0; transform: translateX(-100%); width: 280px; height: 100%; }
+            #sidebar { position: absolute; left: 0; transform: translateX(-100%); width: 290px; height: 100%; }
             #sidebar.active { transform: translateX(0); }
             #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 130000; }
             #overlay.active { display: block; }
@@ -66,7 +66,7 @@
     
     <div class="content-area">
         <div id="sidebar">
-            <div class="map-box" id="map-area">
+            <div class="map-box">
                 <div id="panzoom-parent">
                     <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp" id="map-img">
                 </div>
@@ -109,20 +109,28 @@
         panzoomInstance = Panzoom(imgElement, {
             maxScale: 6,
             minScale: 1,
-            contain: 'inside', // यामुळे इमेज चौकटीच्या बाहेर लटकणार नाही
+            contain: 'outside', 
             cursor: 'move',
-            step: 0.3
+            step: 0.3,
+            duration: 200
         });
 
+        // माऊस व्हील झूम
         const parent = imgElement.parentElement;
-        parent.addEventListener('wheel', panzoomInstance.zoomWithWheel);
-
-        document.getElementById('zoom-in').addEventListener('click', () => {
-            panzoomInstance.zoomIn();
+        parent.addEventListener('wheel', (event) => {
+            panzoomInstance.zoomWithWheel(event);
         });
 
+        // बटणे
+        document.getElementById('zoom-in').addEventListener('click', () => panzoomInstance.zoomIn());
         document.getElementById('zoom-out').addEventListener('click', () => {
             panzoomInstance.zoomOut();
+            // जर पूर्ण झूम आउट झाले असेल, तर इमेज मध्यभागी आणा
+            setTimeout(() => {
+                if (panzoomInstance.getScale() <= 1) {
+                    panzoomInstance.reset({ animate: true });
+                }
+            }, 300);
         });
 
         document.getElementById('zoom-reset').addEventListener('click', () => {

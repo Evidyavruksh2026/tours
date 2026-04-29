@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>evidyavruksh Virtual Tour</title>
+    <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
@@ -24,19 +25,14 @@
         /* साईडबार */
         #sidebar { width: 300px; background: #111; display: flex; flex-direction: column; border-right: 1px solid #333; transition: 0.3s ease; position: relative; z-index: 140000; }
 
-        /* नकाशा विभाग */
-        .map-box { height: 40%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
-        #map-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        #map-img { max-width: 90%; transform: scale(1); transform-origin: center; transition: transform 0.2s ease-out; pointer-events: none; }
+        /* नकाशा विभाग - Panzoom साठी सेटिंग */
+        .map-box { height: 45%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
+        #panzoom-parent { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: move; }
+        #map-img { max-width: 95%; height: auto; user-select: none; -webkit-user-drag: none; }
 
-        /* झूम बटणे - हाय प्रायोरिटी */
-        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 160000; }
-        .z-btn { 
-            width: 45px; height: 45px; background: #007bff; border: 2px solid #fff; 
-            color: white; border-radius: 8px; font-size: 24px; font-weight: bold; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: auto;
-        }
+        /* झूम बटणे */
+        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+        .z-btn { width: 45px; height: 45px; background: #007bff; border: 2px solid #fff; color: white; border-radius: 8px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
         .btn-list { flex: 1; overflow-y: auto; padding: 15px; background: #1a1a1a; }
         .nav-link { width: 100%; padding: 12px; margin-bottom: 10px; background: #333; color: white; border: 1px solid #444; border-radius: 6px; text-align: left; font-size: 14px; cursor: pointer; }
@@ -56,10 +52,10 @@
 
 <div id="login-overlay">
     <div class="login-box">
-        <h2 style="color:#007bff; margin:0 0 10px 0;">evidyavruksh</h2>
+        <h2 style="color:#007bff; margin-bottom:15px;">evidyavruksh</h2>
         <input type="password" id="pw" placeholder="पासवर्ड टाका">
-        <button id="login-submit">Unlock Tour</button>
-        <p id="msg" style="color:red; display:none; font-size:13px; margin-top:10px;">पासवर्ड चुकीचा आहे!</p>
+        <button onclick="handleLogin()">Unlock Tour</button>
+        <p id="msg" style="color:red; display:none; margin-top:10px;">पासवर्ड चुकीचा आहे!</p>
     </div>
 </div>
 
@@ -67,20 +63,20 @@
 
 <div id="main-content">
     <div class="brand-bar">
-        <span>evidyavruksh | 360° Tour</span>
+        <span>evidyavruksh | Master Plan</span>
         <button id="menu-btn" onclick="toggleM()">Menu ☰</button>
     </div>
     
     <div class="content-area">
         <div id="sidebar">
             <div class="map-box">
-                <div id="map-container">
+                <div id="panzoom-parent">
                     <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp" id="map-img">
                 </div>
                 <div class="zoom-ctrls">
-                    <button class="z-btn" id="zin" type="button">+</button>
-                    <button class="z-btn" id="zout" type="button">-</button>
-                    <button class="z-btn" id="zres" type="button">↺</button>
+                    <button class="z-btn" id="zoom-in">+</button>
+                    <button class="z-btn" id="zoom-out">-</button>
+                    <button class="z-btn" id="zoom-reset">↺</button>
                 </div>
             </div>
             <div class="btn-list">
@@ -96,48 +92,41 @@
 </div>
 
 <script>
-    let currentScale = 1;
+    let panzoomInstance;
 
-    // लॉगिन फंक्शन
-    document.getElementById('login-submit').addEventListener('click', function() {
+    function handleLogin() {
         const val = document.getElementById('pw').value.trim();
         if (val === "Andmaster@2029") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('tour-frame').src = "https://tour.panoee.net/69e7792d99ac95c94abe783f";
+            
+            // नकाशा तयार होण्यासाठी थोडा वेळ द्या
+            setTimeout(initMapZoom, 500);
         } else {
             document.getElementById('msg').style.display = 'block';
         }
-    });
+    }
 
-    // झूम फंक्शन्स - अ‍ॅड इव्हेंट लिस्टनर वापरून
-    document.getElementById('zin').addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentScale < 6) {
-            currentScale += 0.5;
-            updateMapScale();
-        }
-    });
+    function initMapZoom() {
+        const imgElement = document.getElementById('map-img');
+        
+        // Panzoom लायब्ररी सुरू करणे
+        panzoomInstance = Panzoom(imgElement, {
+            maxScale: 6,
+            minScale: 1,
+            contain: 'outside', // इमेज हलवता यावी म्हणून 'outside' ठेवले आहे
+            cursor: 'move'
+        });
 
-    document.getElementById('zout').addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentScale > 1) {
-            currentScale -= 0.5;
-            updateMapScale();
-        }
-    });
+        // माऊस व्हील (Wheel) ने झूम करणे
+        const parent = imgElement.parentElement;
+        parent.addEventListener('wheel', panzoomInstance.zoomWithWheel);
 
-    document.getElementById('zres').addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        currentScale = 1;
-        updateMapScale();
-    });
-
-    function updateMapScale() {
-        document.getElementById('map-img').style.transform = "scale(" + currentScale + ")";
+        // बटणांना इव्हेंट्स जोडणे
+        document.getElementById('zoom-in').addEventListener('click', panzoomInstance.zoomIn);
+        document.getElementById('zoom-out').addEventListener('click', panzoomInstance.zoomOut);
+        document.getElementById('zoom-reset').addEventListener('click', panzoomInstance.reset);
     }
 
     function toggleM() {

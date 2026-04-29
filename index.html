@@ -9,7 +9,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
 
-        /* लॉगिन स्क्रीन सुधारणा */
+        /* लॉगिन स्क्रीन - आता पासवर्ड दिसणार नाही */
         #login-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #111; display: flex; align-items: center; justify-content: center; 
@@ -19,50 +19,73 @@
         .login-box input { 
             width: 100%; padding: 15px; border-radius: 8px; border: none; margin: 15px 0; 
             font-size: 16px; background: #333; color: white;
-            text-transform: none; /* कीबोर्ड कॅपिटल होण्यापासून रोखण्यासाठी */
         }
         .login-box button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         #main-content { display: none; height: 100vh; flex-direction: column; }
         
+        /* टॉप बार - मोबाईलवर दिसण्यासाठी हाय z-index */
         .brand-bar { 
             height: 55px; background: #111; display: flex; align-items: center; 
             padding: 0 15px; border-bottom: 1px solid #333; justify-content: space-between;
-            position: relative; z-index: 10001; 
+            position: fixed; top: 0; left: 0; width: 100%;
+            z-index: 100000; 
         }
-        #menu-btn { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .brand-bar span { color: #007bff; font-weight: bold; font-size: 14px; }
+        #menu-btn { 
+            background: #007bff; color: white; border: none; 
+            padding: 8px 12px; border-radius: 5px; cursor: pointer; 
+            font-weight: bold; z-index: 100001;
+        }
 
-        .content-area { display: flex; flex: 1; position: relative; overflow: hidden; }
+        .content-area { display: flex; flex: 1; margin-top: 55px; position: relative; overflow: hidden; height: calc(100vh - 55px); }
 
         /* साईडबार */
         #sidebar { 
             width: 300px; background: #111; display: flex; flex-direction: column; 
-            border-right: 1px solid #333; transition: 0.3s; z-index: 10000;
+            border-right: 1px solid #333; transition: 0.3s ease; 
+            position: relative; z-index: 99999;
         }
 
-        /* नकाशा विभाग - झूम फिक्स */
-        .map-box { height: 40%; background: #000; position: relative; overflow: hidden; border-bottom: 2px solid #333; }
-        #panzoom-element { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; cursor: grab; }
-        #panzoom-element img { max-width: 90%; height: auto; pointer-events: none; } /* इमेज क्लिक ब्लॉक करू नये म्हणून */
+        /* नकाशा विभाग */
+        .map-box { height: 40%; background: #050505; position: relative; overflow: hidden; border-bottom: 2px solid #333; touch-action: none; }
+        #panzoom-element { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #panzoom-element img { max-width: 90%; height: auto; pointer-events: none; }
 
-        /* झूम बटणे - हाय प्रायोरिटी */
-        .zoom-ctrls { position: absolute; bottom: 15px; right: 15px; display: flex; flex-direction: column; gap: 8px; z-index: 11000; }
+        /* झूम बटणे - आता नकाशावर स्पष्ट दिसतील */
+        .zoom-ctrls { position: absolute; bottom: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; z-index: 10; }
         .z-btn { 
-            width: 45px; height: 45px; background: #007bff; border: 2px solid white; 
-            color: white; border-radius: 50%; font-size: 22px; font-weight: bold; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            width: 40px; height: 40px; background: rgba(0, 123, 255, 0.9); 
+            border: 1px solid white; color: white; border-radius: 5px; 
+            font-size: 20px; font-weight: bold; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .btn-list { flex: 1; overflow-y: auto; padding: 15px; }
-        .nav-link { width: 100%; padding: 12px; margin-bottom: 10px; background: #333; color: white; border: 1px solid #444; border-radius: 6px; text-align: left; cursor: pointer; }
+        /* लोकेशन बटणे */
+        .btn-list { flex: 1; overflow-y: auto; padding: 15px; background: #1a1a1a; }
+        .nav-link { 
+            width: 100%; padding: 12px; margin-bottom: 10px; 
+            background: #333; color: white; border: 1px solid #444; 
+            border-radius: 6px; text-align: left; font-size: 13px; cursor: pointer; 
+        }
 
-        #tour-container { flex: 1; background: #000; }
+        /* टूर विभाग */
+        #tour-container { flex: 1; background: #000; position: relative; z-index: 1; }
         iframe { width: 100%; height: 100%; border: none; }
 
+        /* मोबाईल सेटिंग - फिक्स */
         @media (max-width: 768px) {
-            #sidebar { position: absolute; left: -300px; height: 100%; width: 280px; }
-            #sidebar.active { left: 0; }
-            #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; }
+            #sidebar { 
+                position: absolute; left: 0; 
+                transform: translateX(-100%); 
+                width: 280px; height: 100%; 
+            }
+            #sidebar.active { transform: translateX(0); }
+            #overlay { 
+                display: none; position: fixed; top: 0; left: 0; 
+                width: 100%; height: 100%; background: rgba(0,0,0,0.8); 
+                z-index: 99998; 
+            }
             #overlay.active { display: block; }
         }
     </style>
@@ -71,8 +94,8 @@
 
 <div id="login-overlay">
     <div class="login-box">
-        <h2 style="margin:0; color:#007bff;">evidyavruksh</h2>
-        <input type="text" id="pw" placeholder="पासवर्ड टाका" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <h2 style="margin:0 0 10px 0; color:#007bff;">evidyavruksh</h2>
+        <input type="password" id="pw" placeholder="पासवर्ड टाका" autocomplete="current-password">
         <button onclick="check()">Unlock Tour</button>
         <p id="msg" style="color:red; display:none; font-size:13px; margin-top:10px;">पासवर्ड चुकीचा आहे!</p>
     </div>
@@ -82,13 +105,13 @@
 
 <div id="main-content">
     <div class="brand-bar">
-        <span style="color:#007bff; font-weight:bold;">evidyavruksh 360°</span>
+        <span>evidyavruksh 360°</span>
         <button id="menu-btn" onclick="toggleM()">Menu ☰</button>
     </div>
     
     <div class="content-area">
         <div id="sidebar">
-            <div class="map-box" id="map-container">
+            <div class="map-box">
                 <div id="panzoom-element">
                     <img src="https://storagev2.files-vault.com/uploads/blacklabel-741/sub-account-81024/1777368810-kKqLSV5znc.webp">
                 </div>
@@ -99,64 +122,58 @@
                 </div>
             </div>
             <div class="btn-list">
+                <p style="font-size: 11px; color: #888; margin-bottom: 10px;">लोकेशन निवडा:</p>
                 <button class="nav-link" onclick="go('https://tour.panoee.net/69e7792d99ac95c94abe783f')">०१. मुख्य प्रवेश द्वार</button>
                 <button class="nav-link" onclick="go('https://tour.panoee.net/69e76b32a06d09a45e1f2626')">०२. रेसिडेन्शिअल प्लॉट्स</button>
                 <button class="nav-link" onclick="go('https://tour.panoee.net/69e77adb99ac9500efbe78bd')">०३. क्लब हाऊस आणि गार्डन</button>
             </div>
         </div>
         <div id="tour-container">
-            <iframe id="tour-frame" src=""></iframe>
+            <iframe id="tour-frame" src="" allowfullscreen></iframe>
         </div>
     </div>
 </div>
 
 <script>
-    // सिक्युरिटी साठी की 'lowercase' मध्ये चेक करूया
-    const CORRECT_KEY = "andmaster@2029"; 
+    const KEY = "Andmaster@2029"; // हा पासवर्ड जसा आहे तसा टाकावा लागेल
     let pz;
 
     function check() {
-        const inputField = document.getElementById('pw');
-        const userVal = inputField.value.trim().toLowerCase(); // स्पेस काढली आणि लहान अक्षरात रूपांतर केले
-
-        if (userVal === CORRECT_KEY) {
+        const val = document.getElementById('pw').value.trim();
+        if (val === KEY) {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('tour-frame').src = "https://tour.panoee.net/69e7792d99ac95c94abe783f";
             
-            // नकाशा लोड होण्यासाठी थोडा वेळ देऊन लायब्ररी सुरू करा
-            setTimeout(setupPanzoom, 500);
+            // Panzoom सुरू करण्यासाठी थोडा वेळ
+            setTimeout(startP, 500);
         } else {
             document.getElementById('msg').style.display = 'block';
-            inputField.value = "";
+            document.getElementById('pw').value = "";
         }
     }
 
-    function setupPanzoom() {
-        const elem = document.getElementById('panzoom-element');
+    function startP() {
+        const el = document.getElementById('panzoom-element');
         if (typeof Panzoom !== 'undefined') {
-            pz = Panzoom(elem, {
+            pz = Panzoom(el, {
                 maxScale: 5,
                 minScale: 1,
-                contain: 'inside',
-                cursor: 'grab'
+                contain: 'inside'
             });
-
-            // माऊस व्हील झूम जोडणे
-            elem.parentElement.addEventListener('wheel', pz.zoomWithWheel);
-        } else {
-            alert("झूम लायब्ररी लोड झाली नाही, कृपया पेज रिफ्रेश करा.");
+            el.parentElement.addEventListener('wheel', pz.zoomWithWheel);
         }
     }
 
-    // झूम फंक्शन्स स्वतंत्रपणे लिहिली आहेत जेणेकरून ती नक्की चालतील
     function zoomInNow() { if(pz) pz.zoomIn(); }
     function zoomOutNow() { if(pz) pz.zoomOut(); }
     function resetNow() { if(pz) pz.reset(); }
 
     function toggleM() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('overlay');
+        sb.classList.toggle('active');
+        ov.classList.toggle('active');
     }
 
     function go(url) {
@@ -164,7 +181,6 @@
         if(window.innerWidth < 768) toggleM();
     }
 
-    // Enter Key Support
     document.getElementById('pw').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') check();
     });
